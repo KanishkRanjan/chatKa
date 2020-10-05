@@ -23,13 +23,14 @@ io.on('connection', socket => {
         socket.on('message', message => {
             io.to(user.room).emit('sendMessage', formatMessage(user.name, message))
         });
-        socket.emit("roomCheck", { room: user.room, users: getUsersRoom(user.room) });
+        io.emit("roomCheck", { room: user.room, users: getUsersRoom(user.room) });
     });
 
     socket.on('disconnect', () => {
         const user = leaveRoom(socket.id);
         if (user) {
             io.to(user.room).emit("sendMessage", formatMessage(botName, `${user.name} has left`));
+            io.emit("roomCheck", { room: user.room, users: getUsersRoom(user.room) });
         }
     });
 });
